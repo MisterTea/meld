@@ -206,7 +206,7 @@ def fallback_decode(bytes, encodings, lossy=False):
     If lossy is True, then decode errors will be replaced. This may be
     reasonable when the string is for display only.
     """
-    if isinstance(bytes, unicode):
+    if isinstance(bytes, str):
         return bytes
 
     for encoding in encodings:

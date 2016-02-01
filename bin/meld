@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python3
 
 # Copyright (C) 2002-2006 Stephen Kennedy <stevek@gnome.org>
 # Copyright (C) 2009-2014 Kai Willadsen <kai.willadsen@gmail.com>
@@ -147,12 +147,9 @@ def check_requirements():
             print(_("Meld requires %s or higher.") % modver)
         sys.exit(1)
 
-    if sys.version_info[0] == 3:
-        print(_("Meld does not support Python 3."))
+    if sys.version_info[0] != 3:
+        print(_("Meld does not support Python 2."))
         sys.exit(1)
-
-    if sys.version_info[:2] < pyver:
-        missing_reqs("Python", pyver)
 
     # gtk+ and related imports
     try:
@@ -210,7 +207,7 @@ def setup_resources():
     bg_colour = textview_context.get_background_color(Gtk.StateFlags.NORMAL)
     linkmap_css = "LinkMap { background-color: %s; }" % bg_colour.to_string()
     linkmap_provider = Gtk.CssProvider()
-    linkmap_provider.load_from_data(linkmap_css)
+    linkmap_provider.load_from_data(linkmap_css.encode())
     Gtk.StyleContext.add_provider_for_screen(
         Gdk.Screen.get_default(), linkmap_provider,
         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)

@@ -100,7 +100,7 @@ class CachedSequenceMatcher(object):
         """
         if len(self.cache) < size_hint * 3:
             return
-        items = self.cache.items()
+        items = list(self.cache.items())
         items.sort(key=lambda it: it[1][1])
         for item in items[:-size_hint * 2]:
             del self.cache[item[0]]
@@ -898,13 +898,12 @@ class FileDiff(melddoc.MeldDoc, gnomeglade.Component):
         self.undosequence.end_group()
 
     def on_text_insert_text(self, buf, it, text, textlen):
-        text = text_type(text, 'utf8')
         self.undosequence.add_action(
             meldbuffer.BufferInsertionAction(buf, it.get_offset(), text))
         buf.create_mark("insertion-start", it, True)
 
     def on_text_delete_range(self, buf, it0, it1):
-        text = text_type(buf.get_text(it0, it1, False), 'utf8')
+        text = buf.get_text(it0, it1, False)
         assert self.deleted_lines_pending == -1
         self.deleted_lines_pending = it1.get_line() - it0.get_line()
         self.undosequence.add_action(
@@ -1037,7 +1036,7 @@ class FileDiff(melddoc.MeldDoc, gnomeglade.Component):
         if label:
             self.label_text = label
         else:
-            self.label_text = (" — ").decode('utf8').join(shortnames)
+            self.label_text = (" — ").join(shortnames)
         self.tooltip_text = self.label_text
         self.label_changed()
 
@@ -1097,7 +1096,7 @@ class FileDiff(melddoc.MeldDoc, gnomeglade.Component):
                 pass
 
             filename = GLib.markup_escape_text(
-                gfile.get_parse_name()).decode('utf-8')
+                gfile.get_parse_name())
             primary = _(
                 u"There was a problem opening the file “%s”." % filename)
             self.msgarea_mgr[pane].add_dismissable_msg(
@@ -1191,7 +1190,7 @@ class FileDiff(melddoc.MeldDoc, gnomeglade.Component):
             # Notification for unknown buffer
             return
         gfile = Gio.File.new_for_path(data.filename)
-        display_name = gfile.get_parse_name().decode('utf-8')
+        display_name = gfile.get_parse_name()
         primary = _("File %s has changed on disk") % display_name
         secondary = _("Do you want to reload the file?")
         self.msgarea_mgr[pane].add_action_msg(
@@ -1268,9 +1267,7 @@ class FileDiff(melddoc.MeldDoc, gnomeglade.Component):
                 # We don't use self.buffer_texts here, as removing line
                 # breaks messes with inline highlighting in CRLF cases
                 text1 = bufs[0].get_text(starts[0], ends[0], False)
-                text1 = text_type(text1, 'utf8')
                 textn = bufs[1].get_text(starts[1], ends[1], False)
-                textn = text_type(textn, 'utf8')
 
                 # Bail on long sequences, rather than try a slow comparison
                 inline_limit = 10000
@@ -1287,9 +1284,7 @@ class FileDiff(melddoc.MeldDoc, gnomeglade.Component):
                     ends = [bufs[0].get_iter_at_mark(end_marks[0]),
                             bufs[1].get_iter_at_mark(end_marks[1])]
                     text1 = bufs[0].get_text(starts[0], ends[0], False)
-                    text1 = text_type(text1, 'utf8')
                     textn = bufs[1].get_text(starts[1], ends[1], False)
-                    textn = text_type(textn, 'utf8')
 
                     bufs[0].delete_mark(start_marks[0])
                     bufs[0].delete_mark(end_marks[0])
@@ -1489,7 +1484,7 @@ class FileDiff(melddoc.MeldDoc, gnomeglade.Component):
         if not force_overwrite and not bufdata.current_on_disk():
             primary = (
                 _("File %s has changed on disk since it was opened") %
-                bufdata.gfile.get_parse_name().decode('utf-8'))
+                bufdata.gfile.get_parse_name())
             secondary = _("If you save it, any external changes will be lost.")
             msgarea = self.msgarea_mgr[pane].new_from_text_and_icon(
                 'dialog-warning-symbolic', primary, secondary)
@@ -1556,7 +1551,7 @@ class FileDiff(melddoc.MeldDoc, gnomeglade.Component):
             # TODO: Handle recoverable error cases, like external modifications
             # or invalid buffer characters.
             filename = GLib.markup_escape_text(
-                gfile.get_parse_name()).decode('utf-8')
+                gfile.get_parse_name())
             misc.error_dialog(
                 primary=_("Could not save file %s.") % filename,
                 secondary=_("Couldn't save file due to:\n%s") % (

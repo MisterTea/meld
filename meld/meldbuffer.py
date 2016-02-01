@@ -177,7 +177,7 @@ class MeldBufferData(GObject.GObject):
 
         # This is aiming to maintain existing behaviour for filename. The
         # behaviour is however wrong and should be fixed.
-        self.filename = value.get_path().decode('utf8') if value else None
+        self.filename = value.get_path() if value else None
         self.update_mtime()
         self._connect_monitor()
 
@@ -236,7 +236,7 @@ class BufferLines(object):
             # this will return the last line.
             start = self.buf.get_iter_at_line_or_eof(lo)
             end = self.buf.get_iter_at_line_or_eof(hi)
-            txt = text_type(self.buf.get_text(start, end, False), 'utf8')
+            txt = self.buf.get_text(start, end, False)
 
             filter_txt = self.textfilter(txt, self.buf, start, end)
             lines = filter_txt.splitlines()
@@ -285,7 +285,7 @@ class BufferLines(object):
                 line_end.forward_to_line_end()
             txt = self.buf.get_text(line_start, line_end, False)
             txt_filtered = self.textfilter(txt, self.buf, line_start, line_end)
-            return text_type(txt_filtered, 'utf8')
+            return txt_filtered
 
     def __len__(self):
         return self.buf.get_line_count()

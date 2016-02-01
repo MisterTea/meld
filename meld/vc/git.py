@@ -32,7 +32,7 @@ import shutil
 import stat
 import subprocess
 import sys
-import StringIO
+import io
 import tempfile
 from collections import defaultdict
 
@@ -194,7 +194,7 @@ class Vc(_vc.Vc):
         common ancestor anywhere there *is* a conflict.
         """
         proc = self.run("merge-file", "-p", "--diff3", local, base, remote)
-        vc_file = StringIO.StringIO(
+        vc_file = io.StringIO(
             _vc.base_from_diff3(proc.stdout.read()))
 
         prefix = 'meld-tmp-%s-' % _vc.CONFLICT_MERGED

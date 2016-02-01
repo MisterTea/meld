@@ -157,8 +157,11 @@ def _files_same(files, regexes, comparison_args):
 
             # Rough test to see whether files are binary. If files are guessed
             # to be binary, we don't examine contents for speed and space.
-            if any(["\0" in d for d in data]):
+            if any([b"\0" in d for d in data]):
                 need_contents = False
+            else:
+                handles = [open(f, "r") for f in files]
+                data = [h.read(CHUNK_SIZE) for h in handles]
 
             while True:
                 if all_same(data):
@@ -617,13 +620,7 @@ class DirDiff(melddoc.MeldDoc, gnomeglade.Component):
 
     def set_locations(self, locations):
         self.set_num_panes(len(locations))
-        # This is difficult to trigger, and to test. Most of the time here we
-        # will actually have had UTF-8 from GTK, which has been unicode-ed by
-        # the time we get this far. This is a fallback, and may be wrong!
         locations = list(locations)
-        for i, l in enumerate(locations):
-            if not isinstance(l, unicode):
-                locations[i] = l.decode(sys.getfilesystemencoding())
         locations = [os.path.abspath(l) if l else '' for l in locations]
         self.current_path = None
         self.model.clear()
@@ -714,14 +711,6 @@ class DirDiff(melddoc.MeldDoc, gnomeglade.Component):
                     entries = [e for e in entries if f.filter.match(e) is None]
 
                 for e in entries:
-                    try:
-                        if not isinstance(e, unicode):
-                            e = e.decode('utf8')
-                    except UnicodeDecodeError:
-                        approximate_name = e.decode('utf8', 'replace')
-                        encoding_errors.append((pane, approximate_name))
-                        continue
-
                     try:
                         s = os.lstat(os.path.join(root, e))
                     # Covers certain unreadable symlink cases; see bgo#585895

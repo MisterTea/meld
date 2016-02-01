@@ -23,7 +23,7 @@ from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import GtkSource
 
-import meldbuffer
+from meld import meldbuffer
 
 from meld.misc import colour_lookup_with_fallback, get_common_theme
 from meld.settings import bind_settings, meldsettings, settings

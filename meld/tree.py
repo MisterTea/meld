@@ -103,8 +103,6 @@ class DiffTreeStore(Gtk.TreeStore):
 
     def value_path(self, it, pane):
         path = self.get_value(it, self.column_index(COL_PATH, pane))
-        if path is not None:
-            path = path.decode('utf8')
         return path
 
     def is_folder(self, it, pane, path):

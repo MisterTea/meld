@@ -72,7 +72,7 @@ class NotebookLabel(Gtk.HBox):
 
         context = button.get_style_context()
         provider = Gtk.CssProvider()
-        provider.load_from_data(self.css)
+        provider.load_from_data(self.css.encode())
         context.add_provider(provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         icon = Gtk.Image.new_from_icon_name(iconname, Gtk.IconSize.MENU)
